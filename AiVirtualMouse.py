@@ -6,11 +6,14 @@ import autopy
 
 ########################
 
-wCam, hCam = 640, 480
+wCam, hCam = 640, 460
 frameR = 120  # Frame Reduction
+smoothening = 7
 
 ########################
 
+plocX, plocY = 0, 0
+clocX, clocY = 0, 0
 
 cap = cv2.VideoCapture(0)
 cap.set(3, wCam)
@@ -44,13 +47,23 @@ while True:
             y3 = np.interp(y1, (frameR, hCam-frameR), (0, hScr))
 
             # 6. Smoothen Values
+            clocX = plocX + (x3 - plocX) / smoothening
+            clocY = plocY + (y3 - plocY) / smoothening
 
             # 7. Move Mouse
-            autopy.mouse.move(wScr - x3, y3)
+            autopy.mouse.move(wScr - clocX, clocY)
             cv2.circle(img, (x1, y1), 15, (255, 0, 255), cv2.FILLED)
+            plocX, plocY = clocX, clocY
+
         # 8. Both Index and Middle Finger are up : Clicking Mode
-        # 9. Find distance between fingers
-        # 10. Click Mouse if distance short
+        if fingers[1] == 1 and fingers[2] == 1:
+            # 9. Find distance between fingers
+            length, img, lineInfo = detector.findDistance(8, 12, img)
+            print(length)
+            # 10. Click Mouse if distance short
+            if length < 40:
+                cv2.circle(img, (lineInfo[4], lineInfo[5]), 15, (0, 255, 0), cv2.FILLED)
+                autopy.mouse.click()
 
     # 11. Frame Rate
     cTime = time.time()
