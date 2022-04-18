@@ -74,4 +74,9 @@ while True:
 
     # 12. Display
     cv2.imshow("Image", img)
-    cv2.waitKey(1)
+    keyCode = cv2.waitKey(1)
+    if cv2.getWindowProperty("Image", cv2.WND_PROP_VISIBLE) >= 1:
+        continue
+    break
+
+cv2.destroyAllWindows()
