@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import GuiInterface
 import HandTrackingModule as htm
 import time
 import autopy
