@@ -1,10 +1,13 @@
 import sys
 from tkinter import *
+from PIL import ImageTk, Image
 
+root = Tk()
+root.title("HandyMouse")
+root.geometry("400x400")
 
-# Defining a function to be performed by button
-def onclick():
-    exec(open('AiVirtualMouse.py').read())
+WIDTH = 400
+HEIGHT = 400
 
 
 def onstop():
@@ -12,20 +15,27 @@ def onstop():
     sys.exit()
 
 
-root = Tk()
-root.title("HandyMouse")
+# Defining a function to be performed by button
+def onclick():
+    exec(open('AiVirtualMouse.py').read())
 
-# Creating label widget
-label = Label(root, text="AI Virtual Mouse")
 
-# Creating a button
-button = Button(root, text="Start", padx=30, command=onclick, fg="white", bg="red")
+canvas = Canvas(root, width=WIDTH, height=HEIGHT)
+canvas.pack(fill="both", expand=True)
 
-button2 = Button(root, text="Exit", padx=30, command=onstop, fg="white", bg="red")
+background_photo = (Image.open('aiHand.png'))
+resized_image = background_photo.resize((430, 430), Image.ANTIALIAS)
+new_image = ImageTk.PhotoImage(resized_image)
+background = canvas.create_image(0, 0, image=new_image, anchor=NW)
 
-# Showing on the screen
-label.grid(row=0, column=0, columnspan=3, padx=10, pady=10)
-button.grid(row=1, column=0, pady=10)
-button2.grid(row=1, column=1, pady=10)
+my_text = canvas.create_text(220, 40, text="AI Virtual Mouse", font=("Helvetica", 20), fill="white")
+
+button = Button(root, text="Start", padx=40, pady=5, command=onclick, fg="white", bg="green")
+
+button2 = Button(root, text="Exit", padx=40, pady=5, command=onstop, fg="white", bg="red")
+
+my_button1 = canvas.create_window(30, 200, anchor="w", window=button)
+
+my_button2 = canvas.create_window(370, 200, anchor="e", window=button2)
 
 root.mainloop()
