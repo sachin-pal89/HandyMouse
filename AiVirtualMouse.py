@@ -4,6 +4,9 @@ import GuiInterface
 import HandTrackingModule as htm
 import time
 import autopy
+import autopy.mouse
+import pyautogui
+from enum import IntEnum
 
 ########################
 
@@ -22,6 +25,7 @@ cap.set(4, hCam)
 pTime = 0
 detector = htm.handDetector(maxHands=1)
 wScr, hScr = autopy.screen.size()
+
 
 while True:
 
@@ -44,8 +48,8 @@ while True:
         # 4. Only index finger : Moving Mode
         if fingers[1] == 1 and fingers[2] == 0:
             # 5. Convert our Coordinates
-            x3 = np.interp(x1, (frameR, wCam-frameR), (0, wScr))
-            y3 = np.interp(y1, (frameR, hCam-frameR), (0, hScr))
+            x3 = np.interp(x1, (frameR, wCam - frameR), (0, wScr))
+            y3 = np.interp(y1, (frameR, hCam - frameR), (0, hScr))
 
             # 6. Smoothen Values
             clocX = plocX + (x3 - plocX) / smoothening
@@ -65,6 +69,16 @@ while True:
             if length < 40:
                 cv2.circle(img, (lineInfo[4], lineInfo[5]), 15, (0, 255, 0), cv2.FILLED)
                 autopy.mouse.click()
+
+        # 11. Both Index and Thumb Finger are up : Right Clicking Mode
+        if fingers[0] == 1 and fingers[1] == 1:
+            # 12. Find distance between fingers
+            length2, img2, lineInfo2 = detector.findDistance(4, 8, img)
+            print(length2)
+            # 13. Right CLick Mouse if distance short
+            if length2 < 40:
+                cv2.circle(img, (lineInfo2[4], lineInfo2[5]), 15, (0, 255, 0), cv2.FILLED)
+                pyautogui.click(button='right')
 
     # 11. Frame Rate
     cTime = time.time()
